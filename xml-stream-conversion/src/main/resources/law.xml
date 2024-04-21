@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<china_civil_code>
+    <part title="总则">
+        <chapter title="基本原则">
+            <article number="1">
+                <content>本法以保护民事主体平等自由、维护社会公共利益、调整民事关系、保障民事权利为目的。</content>
+            </article>
+            <article number="2">
+                <content>民事主体在民事活动中的法律地位平等。</content>
+            </article>
+        </chapter>
+    </part>
+    <part title="物权">
+        <chapter title="基本规定">
+            <article number="121">
+                <content>物权包括所有权、用益物权和担保物权。</content>
+            </article>
+            <article number="122">
+                <content>物权取得、变更和消灭，依照法律、行政法规的规定，或者按照当事人的约定。</content>
+            </article>
+            <!-- 其他章节条款 -->
+        </chapter>
+        <!-- 其他章节 -->
+    </part>
+    <part title="合同">
+        <chapter title="一般规定">
+            <article number="325">
+                <content>当事人订立、履行合同，应当遵循自愿、平等、公平、诚实信用的原则。</content>
+            </article>
+            <article number="326">
+                <content>合同的内容、格式、成立、变更和解除，应当依法进行。</content>
+            </article>
+        </chapter>
+    </part>
+</china_civil_code>
