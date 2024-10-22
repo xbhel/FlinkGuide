@@ -1,5 +1,6 @@
-package cn.xbhel.func;
+package cn.xbhel.func.timerservice;
 
+import cn.xbhel.func.timerservice.UserTopNFunction;
 import cn.xbhel.model.User;
 import cn.xbhel.model.UserGroupCitation;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static cn.xbhel.func.UserTopNFunction.TOP_N_ACTIVE_USER_DESCRIPTOR;
+import static cn.xbhel.func.timerservice.UserTopNFunction.TOP_N_ACTIVE_USER_DESCRIPTOR;
 import static cn.xbhel.util.TimeUtils.toEpochMills;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;

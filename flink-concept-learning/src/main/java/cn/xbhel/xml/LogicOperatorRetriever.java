@@ -17,13 +17,13 @@ public class LogicOperatorRetriever<T> {
         return head.data;
     }
 
-    public T next(int stateOfPreTime) {
+    public T next(int stateOfPreAction) {
         if(cursor == null) {
             return null;
         }
         Entry<T> next;
         while ((next = cursor.next) != null) {
-            if(stateOfPreTime == cursor.state) {
+            if(stateOfPreAction == cursor.state) {
                 cursor = next;
                 return next.data;
             }

@@ -6,7 +6,8 @@ import org.apache.flink.api.java.tuple.Tuple3;
 import org.dom4j.Node;
 
 @RequiredArgsConstructor
-public class ActionLogicOperatorBuilder extends LogicOperatorBuilder<ActionLogicOperatorBuilder, Tuple3<String, ?, ?>> {
+public class ActionLogicOperatorBuilder extends
+        LogicOperatorBuilder<ActionLogicOperatorBuilder, Tuple3<String, ?, ?>> {
 
     public Operator action(String action, String xpath, String data) {
         return this.push(Tuple3.of(action, xpath, data));
