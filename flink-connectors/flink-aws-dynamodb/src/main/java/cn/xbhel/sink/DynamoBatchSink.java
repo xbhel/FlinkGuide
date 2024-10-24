@@ -1,6 +1,5 @@
 package cn.xbhel.sink;
 
-import cn.xbhel.serdefunc.SerdeSupplier;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.state.ListState;
 import org.apache.flink.api.common.state.ListStateDescriptor;
@@ -32,7 +31,7 @@ public class DynamoBatchSink<T> extends RichSinkFunction<T> implements Checkpoin
     private final long batchSize;
     private final long batchIntervalMs;
     private final TypeInformation<T> elementType;
-    private final SerdeSupplier<DynamoBatchExecutor<T>> batchExecutorSupplier;
+    private final Supplier<DynamoBatchExecutor<T>> batchExecutorSupplier;
 
     private transient DynamoBatchExecutor<T> batchExecutor;
     private transient List<T> bufferedElements;
@@ -44,12 +43,12 @@ public class DynamoBatchSink<T> extends RichSinkFunction<T> implements Checkpoin
     private final AtomicReference<Throwable> failureThrowable = new AtomicReference<>();
 
     public DynamoBatchSink(TypeInformation<T> elementType,
-                           SerdeSupplier<DynamoBatchExecutor<T>> batchExecutorSupplier) {
+                           Supplier<DynamoBatchExecutor<T>> batchExecutorSupplier) {
         this(elementType, batchExecutorSupplier, DEFAULT_BATCH_SIZE, DEFAULT_BATCH_INTERVAL_MS);
     }
 
     public DynamoBatchSink(TypeInformation<T> elementType,
-                           SerdeSupplier<DynamoBatchExecutor<T>> batchExecutorSupplier,
+                           Supplier<DynamoBatchExecutor<T>> batchExecutorSupplier,
                            long batchSize, long batchIntervalMs) {
         this.elementType = elementType;
         this.batchExecutorSupplier = batchExecutorSupplier;
@@ -64,7 +63,7 @@ public class DynamoBatchSink<T> extends RichSinkFunction<T> implements Checkpoin
             this.scheduler = Executors.newScheduledThreadPool(1, new ExecutorThreadFactory("dynamo-batch-sink"));
             this.scheduledFuture = this.scheduler.scheduleWithFixedDelay(() -> {
                         synchronized (this) {
-                            if (!this.closed && failureThrowable.get() != null) {
+                            if (!this.closed && failureThrowable.get() == null) {
                                 try {
                                     this.flush();
                                 } catch (Exception e) {

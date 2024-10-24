@@ -6,13 +6,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cn.xbhel</groupId>
-    <artifactId>flink-connector-examples</artifactId>
+    <artifactId>flink-connectors</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>flink-connector-examples</name>
+    <name>flink-connectors</name>
     <modules>
         <module>flink-aws-dynamodb</module>
+        <module>flink-connector-examples</module>
     </modules>
 
     <properties>

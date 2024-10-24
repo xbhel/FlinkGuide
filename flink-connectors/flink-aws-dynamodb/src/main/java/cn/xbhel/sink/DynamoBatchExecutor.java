@@ -38,8 +38,19 @@ public abstract class DynamoBatchExecutor<T> {
     }
 
     public void executeBatch(List<T> items) {
-        var chunks = Lists.partition(items, DYNAMO_SUPPORTED_MAX_BATCH_SIZE);
-        chunks.forEach(this::executeBatchInternal);
+        if(CollectionUtils.isNotEmpty(items)) {
+            var total = items.size();
+            if(total > DYNAMO_SUPPORTED_MAX_BATCH_SIZE) {
+                var chunks = Lists.partition(items, DYNAMO_SUPPORTED_MAX_BATCH_SIZE);
+                log.debug("Partitioned {} items into {} chunks for processing.",
+                        total, chunks.size());
+                chunks.forEach(this::executeBatchInternal);
+                log.debug("All chucks successfully executed for table:{}, total items processed:{}",
+                        tableName, total);
+            } else {
+                this.executeBatchInternal(items);
+            }
+        }
     }
 
     protected abstract WriteBatch configureWriteBatch(List<T> items);
@@ -81,7 +92,7 @@ public abstract class DynamoBatchExecutor<T> {
     static <E> WriteBatch configureFailureWriteBatch(
             BatchWriteResult writeResult, DynamoDbTable<E> dynamoDbTable, Class<E> itemClass
     ) {
-        var builder = WriteBatch.builder(itemClass);
+        var builder = WriteBatch.builder(itemClass).mappedTableResource(dynamoDbTable);
         var unprocessedPutItems = writeResult.unprocessedPutItemsForTable(dynamoDbTable);
         var unprocessedDeleteItems = writeResult.unprocessedDeleteItemsForTable(dynamoDbTable);
         if (CollectionUtils.isNotEmpty(unprocessedPutItems)) {
