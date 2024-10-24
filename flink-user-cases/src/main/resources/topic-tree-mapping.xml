@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<practiceareas>
+    <practicearea lang="en">
+        <label>label</label>
+        <topics>
+            <topic>
+                <label>topic1</label>
+            </topic>
+            <topics>
+                <topic>
+                    <label>sub-topic-1</label>
+                </topic>
+            </topics>
+            <topic>
+                <label>topic2</label>
+            </topic>
+            <topics>
+                <topic>
+                    <label>sub-topic-2</label>
+                </topic>
+            </topics>
+        </topics>
+    </practicearea>
+</practiceareas>
