@@ -1,7 +1,9 @@
 package cn.xbhel.sink;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@Getter
 @RequiredArgsConstructor
 public enum WriteMode {
 

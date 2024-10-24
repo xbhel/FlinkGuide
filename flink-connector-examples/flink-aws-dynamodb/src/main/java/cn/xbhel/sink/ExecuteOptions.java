@@ -1,7 +1,6 @@
 package cn.xbhel.sink;
 
 import lombok.Data;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;

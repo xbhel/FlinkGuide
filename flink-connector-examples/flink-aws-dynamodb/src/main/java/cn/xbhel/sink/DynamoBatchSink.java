@@ -1,5 +1,6 @@
 package cn.xbhel.sink;
 
+import cn.xbhel.serdefunc.SerdeSupplier;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.state.ListState;
 import org.apache.flink.api.common.state.ListStateDescriptor;
@@ -31,8 +32,9 @@ public class DynamoBatchSink<T> extends RichSinkFunction<T> implements Checkpoin
     private final long batchSize;
     private final long batchIntervalMs;
     private final TypeInformation<T> elementType;
-    private final DynamoBatchExecutor<T> batchExecutor;
+    private final SerdeSupplier<DynamoBatchExecutor<T>> batchExecutorSupplier;
 
+    private transient DynamoBatchExecutor<T> batchExecutor;
     private transient List<T> bufferedElements;
     private transient ListState<T> elementListState;
     private transient long numPendingElement = 0;
@@ -41,20 +43,23 @@ public class DynamoBatchSink<T> extends RichSinkFunction<T> implements Checkpoin
     private transient ScheduledFuture<?> scheduledFuture;
     private final AtomicReference<Throwable> failureThrowable = new AtomicReference<>();
 
-    public DynamoBatchSink(TypeInformation<T> elementType, DynamoBatchExecutor<T> batchExecutor) {
-        this(elementType, batchExecutor, DEFAULT_BATCH_SIZE, DEFAULT_BATCH_INTERVAL_MS);
+    public DynamoBatchSink(TypeInformation<T> elementType,
+                           SerdeSupplier<DynamoBatchExecutor<T>> batchExecutorSupplier) {
+        this(elementType, batchExecutorSupplier, DEFAULT_BATCH_SIZE, DEFAULT_BATCH_INTERVAL_MS);
     }
 
-    public DynamoBatchSink(TypeInformation<T> elementType, DynamoBatchExecutor<T> executor,
+    public DynamoBatchSink(TypeInformation<T> elementType,
+                           SerdeSupplier<DynamoBatchExecutor<T>> batchExecutorSupplier,
                            long batchSize, long batchIntervalMs) {
         this.elementType = elementType;
-        this.batchExecutor = executor;
+        this.batchExecutorSupplier = batchExecutorSupplier;
         this.batchSize = batchSize;
         this.batchIntervalMs = batchIntervalMs;
     }
 
     @Override
     public void open(Configuration parameters) {
+        this.batchExecutor = batchExecutorSupplier.get();
         if (this.batchSize > 1 && this.batchIntervalMs > 0) {
             this.scheduler = Executors.newScheduledThreadPool(1, new ExecutorThreadFactory("dynamo-batch-sink"));
             this.scheduledFuture = this.scheduler.scheduleWithFixedDelay(() -> {
@@ -75,7 +80,7 @@ public class DynamoBatchSink<T> extends RichSinkFunction<T> implements Checkpoin
     @Override
     public synchronized void invoke(T value, Context context) {
         // Synchronized access is required to prevent the scheduled timer
-        // and the main thread from modifying bufferedElements at the same time.
+        // and the worker thread from modifying bufferedElements at the same time.
         checkErrorAndRethrow();
         bufferedElements.add(value);
         ++numPendingElement;
@@ -86,7 +91,7 @@ public class DynamoBatchSink<T> extends RichSinkFunction<T> implements Checkpoin
 
     public synchronized void flush() {
         // Synchronized access is required to prevent the scheduled timer
-        // and the main thread from modifying bufferedElements at the same time.
+        // and the worker thread from modifying bufferedElements at the same time.
         batchExecutor.executeBatch(bufferedElements);
         bufferedElements.clear();
         numPendingElement = 0;
@@ -131,4 +136,5 @@ public class DynamoBatchSink<T> extends RichSinkFunction<T> implements Checkpoin
             this.elementListState.get().forEach(this.bufferedElements::add);
         }
     }
+
 }

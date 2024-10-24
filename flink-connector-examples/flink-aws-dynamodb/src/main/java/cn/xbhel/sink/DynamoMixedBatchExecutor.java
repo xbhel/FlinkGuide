@@ -21,10 +21,10 @@ public class DynamoMixedBatchExecutor<T> extends DynamoBatchExecutor<Tuple2<Writ
                 TableSchema.fromClass(options.getItemClass()));
     }
 
-
     @Override
     protected WriteBatch configureWriteBatch(List<Tuple2<WriteMode, T>> items) {
-        var builder = WriteBatch.builder(options.getItemClass());
+        var builder = WriteBatch.builder(options.getItemClass())
+                .mappedTableResource(dynamoDbTable);
         for (var modeWithItem: items) {
             var mode = modeWithItem.f0;
             var item = modeWithItem.f1;
@@ -34,7 +34,6 @@ public class DynamoMixedBatchExecutor<T> extends DynamoBatchExecutor<Tuple2<Writ
                 builder.addPutItem(item);
             }
         }
-
         return builder.build();
     }
 

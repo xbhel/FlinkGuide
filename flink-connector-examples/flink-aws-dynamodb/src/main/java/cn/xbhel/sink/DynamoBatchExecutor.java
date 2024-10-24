@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.flink.client.program.rest.retry.ExponentialWaitStrategy;
 import org.apache.flink.client.program.rest.retry.WaitStrategy;
-import org.apache.flink.shaded.guava30.com.google.common.collect.Iterators;
 import org.apache.flink.shaded.guava30.com.google.common.collect.Lists;
 import org.apache.flink.util.Preconditions;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;

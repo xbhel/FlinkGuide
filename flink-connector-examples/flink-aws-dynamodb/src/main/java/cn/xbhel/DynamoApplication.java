@@ -15,22 +15,21 @@ public final class DynamoApplication {
                 .map(i -> new User().setUserId(Math.toIntExact(i)));
 
         // single mode
-        var batchExecutor = new DynamoSingleBatchExecutor<>(
-                WriteMode.INSERT,
-                new ExecuteOptions<>("dynamo-user", User.class)
-        );
         usersStream.addSink(new DynamoBatchSink<>(
-                TypeInformation.of(User.class), batchExecutor));
+                TypeInformation.of(User.class),
+                () -> new DynamoSingleBatchExecutor<>(
+                        WriteMode.INSERT,
+                        new ExecuteOptions<>("dynamo-user", User.class)
+                )));
 
         // mixed mode
-        var mixedBatchExecutor = new DynamoMixedBatchExecutor<>(
-                new ExecuteOptions<>("dynamo-user", User.class));
-        var tuple2DynamoBatchSink = new DynamoBatchSink<>(
-                TypeInformation.of(new TypeHint<>() {
-                }), mixedBatchExecutor
-        );
         usersStream.map(user -> Tuple2.of(WriteMode.INSERT, user))
-                .addSink(tuple2DynamoBatchSink);
+                .addSink(new DynamoBatchSink<>(
+                        TypeInformation.of(new TypeHint<>() {
+                        }),
+                        () -> new DynamoMixedBatchExecutor<>(
+                                new ExecuteOptions<>("dynamo-user", User.class)
+                        )));
     }
 
 

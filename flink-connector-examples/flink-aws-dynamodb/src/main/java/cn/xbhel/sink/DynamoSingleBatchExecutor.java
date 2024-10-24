@@ -24,7 +24,8 @@ public class DynamoSingleBatchExecutor<T> extends DynamoBatchExecutor<T> {
 
     @Override
     protected WriteBatch configureWriteBatch(List<T> items) {
-        var builder = WriteBatch.builder(options.getItemClass());
+        var builder = WriteBatch.builder(options.getItemClass())
+                .mappedTableResource(dynamoDbTable);
         if (writeMode == WriteMode.DELETE) {
             items.forEach(builder::addDeleteItem);
         } else if (writeMode == WriteMode.INSERT || writeMode == WriteMode.UPDATE) {
